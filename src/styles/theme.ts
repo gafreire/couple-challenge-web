@@ -41,20 +41,20 @@ const baseTheme = {
 export const darkTheme = {
   ...baseTheme,
   colors: {
-    primary: '#FF6B6B',
-    primaryDark: '#E85555',
+    primary: '#E63946',
+    primaryDark: '#C1121F',
+    primaryLight: '#FF6B6B',
     secondary: '#FFE66D',
-    background: '#1A1A2E',
-    surface: '#16213E',
-    surfaceAlt: '#0F3460',
+    background: '#0D0D0D',
+    surface: '#1A1A1A',
+    surfaceAlt: '#242424',
     textPrimary: '#EAEAEA',
     textSecondary: '#9A9AB0',
-    border: '#2A2A4A',
+    border: '#2A2A2A',
     error: '#FF4444',
     success: '#44BB77',
   },
 };
-
 export const lightTheme = {
   ...baseTheme,
   colors: {
