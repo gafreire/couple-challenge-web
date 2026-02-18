@@ -1,9 +1,13 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
-import LoginPage from '../pages/auth/LoginPage';
-import SignupPage from '../pages/auth/SignupPage';
-import DashboardPage from '../pages/dashboard/DashboardPage';
+import React from "react";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import LoginPage from "../pages/auth/LoginPage";
+import SignupPage from "../pages/auth/SignupPage";
+import DashboardPage from "../pages/dashboard/DashboardPage";
+import CouplePage from "../pages/couple/CouplePage";
+import ChallengesPage from "../pages/challenges/ChallengesPage";
+import ProfilePage from "../pages/profile/ProfilePage";
+import PrivateLayout from "../components/layout/PrivateLayout";
 
 interface PrivateRouteProps {
   children: React.ReactNode;
@@ -43,13 +47,20 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/dashboard"
         element={
           <PrivateRoute>
-            <DashboardPage />
+            <PrivateLayout>
+              <Outlet />
+            </PrivateLayout>
           </PrivateRoute>
         }
-      />
+      >
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/couple" element={<CouplePage />} />
+        <Route path="/challenges" element={<ChallengesPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Route>
+     
       <Route path="/" element={<Navigate to="/dashboard" />} />
     </Routes>
   );
