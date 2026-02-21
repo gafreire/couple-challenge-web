@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { coupleService } from '../../../services/couple.service';
-import type { Couple } from '../../../types/couple.types';
+import React, { useState } from "react";
+import axios from "axios";
+import { coupleService } from "../../../services/couple.service";
+import type { Couple } from "../../../types/couple.types";
 import {
   Container,
   AnimatedIcon,
@@ -9,8 +9,8 @@ import {
   Subtitle,
   EmailBadge,
   CancelButton,
-} from './PendingInvite.styles';
-import { ErrorMessage } from './NoCouple.styles';
+} from "./PendingInvite.styles";
+import { ErrorMessage } from "./NoCouple.styles";
 
 interface PendingInviteProps {
   pendingCouple: Couple;
@@ -18,8 +18,7 @@ interface PendingInviteProps {
 
 const PendingInvite: React.FC<PendingInviteProps> = ({ pendingCouple }) => {
   const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string>('');
-
+  const [error, setError] = useState<string>("");
 
   const handleCancel = async () => {
     setIsLoading(true);
@@ -28,9 +27,9 @@ const PendingInvite: React.FC<PendingInviteProps> = ({ pendingCouple }) => {
       window.location.reload();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.error || 'Erro ao cancelar convite');
+        setError(error.response?.data?.error || "Erro ao cancelar convite");
       } else {
-        setError('Erro inesperado ao cancelar convite');
+        setError("Erro inesperado ao cancelar convite");
       }
     } finally {
       setIsLoading(false);
@@ -42,12 +41,10 @@ const PendingInvite: React.FC<PendingInviteProps> = ({ pendingCouple }) => {
       <AnimatedIcon>📩</AnimatedIcon>
       <Title>Convite enviado!</Title>
       <Subtitle>Aguardando resposta do seu parceiro</Subtitle>
-      <EmailBadge>
-        {pendingCouple.invited_email}
-      </EmailBadge>
+      <EmailBadge>{pendingCouple.invited_email}</EmailBadge>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <CancelButton onClick={handleCancel} disabled={isLoading}>
-        {isLoading ? 'Cancelando...' : 'Cancelar convite'}
+        {isLoading ? "Cancelando..." : "Cancelar convite"}
       </CancelButton>
     </Container>
   );
