@@ -1,4 +1,4 @@
-import { Home, Heart, Target, User } from 'lucide-react';
+import { Home, Heart, Target, CheckSquare, User } from 'lucide-react';
 import { Nav, NavItem, NavLabel } from './BottomNav.styles';
 
 const BottomNav = () => {
@@ -6,6 +6,7 @@ const BottomNav = () => {
     { path: '/dashboard', icon: Home, label: 'Início' },
     { path: '/couple', icon: Heart, label: 'Casal' },
     { path: '/challenges', icon: Target, label: 'Desafios' },
+    { path: '/tasks', icon: CheckSquare, label: 'Tarefas' },
     { path: '/profile', icon: User, label: 'Perfil' },
   ];
 

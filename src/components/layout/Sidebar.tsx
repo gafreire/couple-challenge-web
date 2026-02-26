@@ -7,6 +7,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  CheckSquare
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import {
@@ -31,11 +32,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapseChange }) => {
   const { logout } = useAuthStore();
 
   const navItems = [
-    { path: "/dashboard", icon: Home, label: "Início" },
-    { path: "/couple", icon: Heart, label: "Casal" },
-    { path: "/challenges", icon: Target, label: "Desafios" },
-    { path: "/profile", icon: User, label: "Perfil" },
-  ];
+  { path: "/dashboard", icon: Home, label: "Início" },
+  { path: "/couple", icon: Heart, label: "Casal" },
+  { path: "/challenges", icon: Target, label: "Desafios" },
+  { path: "/tasks", icon: CheckSquare, label: "Tarefas" },
+  { path: "/profile", icon: User, label: "Perfil" },
+];
 
   const handleLogout = () => {
     logout();

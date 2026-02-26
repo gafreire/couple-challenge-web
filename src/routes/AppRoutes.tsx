@@ -6,6 +6,7 @@ import SignupPage from "../pages/auth/SignupPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import CouplePage from "../pages/couple/CouplePage";
 import ChallengesPage from "../pages/challenges/ChallengesPage";
+import TasksPage from "../pages/tasks/TasksPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import PrivateLayout from "../components/layout/PrivateLayout";
 
@@ -58,6 +59,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/couple" element={<CouplePage />} />
         <Route path="/challenges" element={<ChallengesPage />} />
+        <Route path="/tasks" element={<TasksPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
      
