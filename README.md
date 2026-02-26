@@ -1,18 +1,90 @@
 # 💑 Couple Challenge — Frontend
 
-Uma aplicação web gamificada para casais criarem desafios e competirem por pontos através da conclusão de tarefas.
+> Uma aplicação web gamificada para casais competirem através de desafios e tarefas pontuadas
+
+[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6-purple)](https://vitejs.dev/)
+[![Styled Components](https://img.shields.io/badge/Styled_Components-6-pink)](https://styled-components.com/)
 
 ---
 
-## 🚀 Stack
+## 📋 Sobre o Projeto
 
-- **React 19** + **TypeScript** + **Vite**
-- **Styled Components** — CSS-in-JS com temas centralizados
-- **Zustand** — gerenciamento de estado global
-- **React Hook Form** + **Zod** — formulários e validação
-- **Axios** — HTTP client com interceptors
-- **React Router v6** — roteamento com layout routes
-- **lucide-react** — ícones SVG
+Couple Challenge é uma aplicação frontend que permite casais criarem desafios com tarefas pontuadas, competirem de forma saudável e acompanharem o progresso através de um sistema de gamificação. Consome a [Couple Challenge API](https://github.com/gafreire/couple-challenge-api).
+
+### ✨ Funcionalidades Principais
+
+- 🔐 **Autenticação** - Login e cadastro com JWT
+- 💑 **Gestão de Casais** - Convites, aceitar, recusar, sair
+- 🎯 **Desafios** - Criar desafios com períodos personalizados
+- ✅ **Tarefas** - CRUD completo de tarefas pontuadas
+- 🏆 **Pontuação** - Placar em tempo real com destaque para o líder
+- 📊 **Histórico** - Acompanhe todos os desafios completados
+
+---
+
+## 🚀 Demo
+
+**Status:** MVP Frontend 100% Completo  
+**Deploy:** Em breve (Fase 3 do roadmap)
+
+---
+
+## 🛠️ Tecnologias
+
+### Core
+- **React 19** - Framework principal
+- **TypeScript 5** - Linguagem com tipagem estática
+- **Vite 6** - Build tool com HMR rápido
+
+### Estilização & UI
+- **Styled Components 6** - CSS-in-JS com temas centralizados
+- **lucide-react** - Ícones SVG consistentes
+
+### Estado & Formulários
+- **Zustand 5** - Gerenciamento de estado global
+- **React Hook Form 7** - Formulários performáticos
+- **Zod 3** - Validação de schemas com inferência de tipos
+
+### HTTP & Roteamento
+- **Axios** - HTTP client com interceptors
+- **React Router v6** - Roteamento com layout routes
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+├── components/
+│   └── layout/             # Sidebar, BottomNav, PrivateLayout
+├── pages/
+│   ├── auth/               # LoginPage, SignupPage
+│   ├── couple/             # CouplePage + componentes de estado
+│   │   └── components/
+│   │       ├── NoCouple.tsx
+│   │       ├── PendingInvite.tsx
+│   │       ├── ReceivedInvite.tsx
+│   │       └── ActiveCouple.tsx
+│   ├── challenges/         # ChallengesPage + componentes
+│   │   └── components/
+│   │       ├── ActiveChallengeCard.tsx
+│   │       ├── ChallengeHistoryItem.tsx
+│   │       └── CreateChallengeModal.tsx
+│   ├── tasks/              # TasksPage
+│   │   └── components/
+│   │       ├── TaskItem.tsx
+│   │       ├── CreateTaskModal.tsx
+│   │       └── EditTaskModal.tsx
+│   ├── dashboard/          # DashboardPage
+│   └── profile/            # ProfilePage
+├── services/               # Camada de integração com a API
+├── store/                  # Zustand stores
+├── types/                  # Interfaces TypeScript por domínio
+├── styles/                 # theme.ts, GlobalStyle.ts
+└── routes/                 # AppRoutes.tsx
+```
 
 ---
 
@@ -20,7 +92,7 @@ Uma aplicação web gamificada para casais criarem desafios e competirem por pon
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/couple-challenge-frontend
+git clone https://github.com/gafreire/couple-challenge-frontend
 
 # Instale as dependências
 npm install
@@ -42,209 +114,162 @@ npm run dev
 
 A aplicação estará disponível em `http://localhost:5173`.
 
----
-
-## 📁 Estrutura de Pastas
-
-```
-src/
-├── components/
-│   └── layout/             # Sidebar, BottomNav, PrivateLayout
-├── pages/
-│   ├── auth/               # LoginPage, SignupPage
-│   ├── couple/             # CouplePage + componentes de estado
-│   │   └── components/
-│   │       ├── NoCouple.tsx
-│   │       ├── PendingInvite.tsx
-│   │       ├── ReceivedInvite.tsx
-│   │       └── ActiveCouple.tsx
-│   ├── challenges/         # ChallengesPage + componentes
-│   │   └── components/
-│   │       ├── ActiveChallengeCard.tsx
-│   │       ├── ChallengeHistoryItem.tsx
-│   │       └── CreateChallengeModal.tsx
-│   ├── tasks/              # TasksPage
-│   │   └── (componentes compartilhados de challenges)
-│   │       ├── TaskItem.tsx
-│   │       ├── CreateTaskModal.tsx
-│   │       └── EditTaskModal.tsx
-│   ├── dashboard/          # DashboardPage
-│   └── profile/            # ProfilePage
-├── services/
-│   ├── api.ts              # Instância Axios configurada
-│   ├── auth.service.ts
-│   ├── couple.service.ts
-│   ├── challenge.service.ts
-│   ├── task.service.ts
-│   └── user.service.ts
-├── store/
-│   └── authStore.ts        # Zustand store
-├── types/
-│   ├── auth.types.ts
-│   ├── couple.types.ts
-│   ├── challenge.types.ts
-│   ├── task.types.ts
-│   └── user.types.ts
-├── styles/
-│   ├── theme.ts
-│   └── GlobalStyle.ts
-└── routes/
-    └── AppRoutes.tsx
-```
+> **Importante:** O arquivo `.env` deve estar na raiz do projeto, não em `src/`. Variáveis devem ter prefixo `VITE_` para serem expostas ao cliente.
 
 ---
 
-## 🗺️ Rotas
-
-| Rota | Tipo | Página |
-|------|------|--------|
-| `/login` | Pública | LoginPage |
-| `/signup` | Pública | SignupPage |
-| `/dashboard` | Privada | DashboardPage |
-| `/couple` | Privada | CouplePage |
-| `/challenges` | Privada | ChallengesPage |
-| `/tasks` | Privada | TasksPage |
-| `/profile` | Privada | ProfilePage |
-| `/` | Redirect | → `/dashboard` |
-
----
-
-## ✅ Funcionalidades Implementadas
+## 🔌 Endpoints Consumidos
 
 ### Autenticação
-- [x] Cadastro de conta com nome, email e senha
-- [x] Login com email e senha
-- [x] Logout
-- [x] Proteção de rotas privadas
-- [x] Persistência de sessão via localStorage
-- [x] Interceptor Axios para injeção de token JWT
-- [x] Redirecionamento automático em caso de 401
 
-### Casal
-- [x] Envio de convite por email
-- [x] Visualização de convite pendente enviado
-- [x] Visualização de convites recebidos
-- [x] Aceitar convite
-- [x] Recusar convite
-- [x] Cancelar convite enviado
-- [x] Sair do casal
-- [x] Detecção automática de estado (sem casal / pendente / recebido / ativo)
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/auth/signup` | Criar conta |
+| POST | `/api/auth/login` | Autenticar usuário |
+
+### Usuário
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| GET | `/api/user/profile` | Ver perfil | ✅ |
+| PUT | `/api/user/profile` | Atualizar perfil | ✅ |
+
+### Casais
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| POST | `/api/couples` | Criar casal (enviar convite) | ✅ |
+| GET | `/api/couples/invites` | Listar convites recebidos | ✅ |
+| GET | `/api/couples/me` | Ver dados do casal | ✅ |
+| GET | `/api/couples/me/pending` | Ver convite pendente enviado | ✅ |
+| PUT | `/api/couples/:id/accept` | Aceitar convite | ✅ |
+| PUT | `/api/couples/:id/decline` | Recusar convite | ✅ |
+| DELETE | `/api/couples/:id` | Cancelar convite | ✅ |
+| DELETE | `/api/couples/me` | Sair do casal | ✅ |
 
 ### Desafios
-- [x] Criar desafio com nome, datas e tipo de período
-- [x] Validação de datas (fim deve ser posterior ao início)
-- [x] Visualizar desafio ativo com progress bar e dias restantes
-- [x] Pontuação em tempo real de ambos os parceiros
-- [x] Finalizar desafio (liberado apenas após o fim do período)
-- [x] Histórico de desafios concluídos e cancelados com vencedor e placar
 
-### Tarefas
-- [x] Criar tarefa com nome, descrição, pontos e máximo de conclusões
-- [x] Listar tarefas do desafio ativo
-- [x] Editar tarefa (apenas o criador)
-- [x] Deletar tarefa (apenas o criador)
-- [x] Concluir tarefa acumulando pontos
-- [x] Bloqueio de conclusão ao atingir `max_completions`
-- [x] Contagem de conclusões por tarefa
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| POST | `/api/challenges` | Criar desafio | ✅ |
+| GET | `/api/challenges` | Listar desafios | ✅ |
+| GET | `/api/challenges/active` | Ver desafio ativo | ✅ |
+| GET | `/api/challenges/:id/score` | Ver pontuação atual | ✅ |
+| PUT | `/api/challenges/:id/finish` | Finalizar desafio | ✅ |
 
-### Dashboard
-- [x] Saudação personalizada
-- [x] Placar atual lado a lado com destaque para quem está ganhando
-- [x] Card do desafio ativo com progresso e dias restantes
-- [x] Mensagens contextuais quando sem casal ou desafio
+### Tasks
 
-### Perfil
-- [x] Visualizar foto, nome e email
-- [x] Editar nome e foto de perfil via URL
-- [x] Feedback de sucesso com auto-dismiss
-- [x] Atualização imediata do store após edição
-
-### Layout
-- [x] Bottom navigation no mobile (< 768px)
-- [x] Sidebar lateral colapsável no desktop (≥ 768px)
-- [x] Tema dark com design tokens centralizados
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| POST | `/api/tasks` | Criar task | ✅ |
+| GET | `/api/challenges/:id/tasks` | Listar tasks do desafio | ✅ |
+| PUT | `/api/tasks/:id` | Atualizar task | ✅ |
+| DELETE | `/api/tasks/:id` | Deletar task | ✅ |
+| POST | `/api/task-completions` | Completar task | ✅ |
 
 ---
 
-## 🛣️ Roadmap
+## 🏗️ Arquitetura
 
-### v1.1 — Melhorias de UX
+### Padrão de Camadas
+
+```
+Usuário → Page → Service → Axios (api.ts) → API REST
+            ↓                    ↓
+         Zustand Store      Interceptors (JWT inject / 401 redirect)
+```
+
+### Separação de Responsabilidades
+
+- **Routes:** Definição de rotas públicas, privadas e layout routes
+- **Pages:** Orquestração de estado, chamada de services e renderização
+- **Components:** Elementos visuais reutilizáveis e isolados
+- **Services:** Encapsulamento das chamadas HTTP por domínio
+- **Store:** Estado global (autenticação)
+- **Types:** Interfaces TypeScript espelhando os modelos da API
+
+---
+
+## 🔐 Segurança
+
+### Implementado ✅
+- ✅ Token JWT armazenado no localStorage
+- ✅ Injeção automática do token via interceptor Axios
+- ✅ Redirecionamento automático em caso de 401
+- ✅ Proteção de rotas privadas com PrivateRoute
+- ✅ Validação client-side com Zod antes de qualquer requisição
+- ✅ Controle de permissão por owner nas tarefas
+
+### Planejado ⏳
+- ⏳ Refresh tokens
+- ⏳ Expiração automática de sessão com aviso
+- ⏳ Proteção de rotas por papel (admin/user)
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Fase 1 - MVP Backend (COMPLETO)
+- [x] Auth Feature
+- [x] User Feature
+- [x] Couples Feature (8 endpoints)
+- [x] Challenges Feature (5 endpoints)
+- [x] Tasks Feature (4 endpoints)
+- [x] Task Completions Feature
+
+### ✅ Fase 2 - MVP Frontend (COMPLETO)
+- [x] Setup React + Vite + TypeScript
+- [x] Design System com Styled Components e tema dark
+- [x] Autenticação UI (login, signup, logout)
+- [x] Layout responsivo (sidebar desktop + bottom nav mobile)
+- [x] Gestão de Casais (todos os estados)
+- [x] Desafios (criar, listar, finalizar, histórico)
+- [x] Tarefas (CRUD completo + completar)
+- [x] Dashboard com placar em tempo real
+- [x] Perfil editável
+
+### 🚀 Fase 3 - Deploy Beta
+- [ ] Deploy Backend (Railway)
+- [ ] Deploy Frontend (Vercel)
+- [ ] Banco em nuvem
+- [ ] Monitoramento básico
+
+### ⚡ Fase 4 - Features Avançadas
 - [ ] Toggle dark/light theme
-- [ ] Skeleton loading states (substituir texto "Carregando...")
-- [ ] Toast notifications (substituir `ErrorMessage` inline)
-- [ ] Animações de transição entre páginas
-- [ ] Pull-to-refresh no mobile
+- [ ] Upload de foto de perfil (S3/Cloudinary)
+- [ ] Foto ao completar tarefa como evidência
+- [ ] Notificações em tempo real (WebSocket)
+- [ ] PWA — instalação no celular como app nativo
+- [ ] Gamificação (badges, conquistas)
 
-### v1.2 — Upload de Mídia
-- [ ] Upload de foto de perfil direto pela interface (sem URL manual)
-- [ ] Foto ao completar tarefa (`photo_url`) como evidência de conclusão
-- [ ] Galeria de fotos por tarefa
-
-### v1.3 — Tempo Real
-- [ ] Notificações quando o parceiro conclui uma tarefa
-- [ ] Atualização de pontuação em tempo real via WebSocket ou polling
-- [ ] Indicador de "parceiro online"
-
-### v1.4 — PWA e Deploy
-- [ ] Configuração de PWA — instalação no celular como app nativo
-- [ ] Deploy frontend no Vercel
-- [ ] Deploy backend no Railway
+### 🧪 Fase 5+ - Qualidade & Escala
+- [ ] React Query para cache e sincronização de dados
+- [ ] Testes automatizados (Vitest + Testing Library)
 - [ ] CI/CD via GitHub Actions
-
-### v2.0 — Novas Funcionalidades
-- [ ] React Query para cache e sincronização inteligente de dados
-- [ ] Sistema de conquistas e badges por marcos atingidos
-- [ ] Comentários e reações nas tarefas concluídas
-- [ ] Modo cooperativo (sem competição, pontos somados juntos)
-- [ ] Estatísticas históricas com gráficos por período
-- [ ] Compartilhamento de resultado do desafio via link
+- [ ] Skeleton loading states
+- [ ] Toast notifications
 
 ---
 
-## 🔌 Integração com a API
+### Padrão de Commits (Gitmoji)
 
-O frontend consome a API REST do [Couple Challenge Backend](https://github.com/seu-usuario/couple-challenge-backend).
-
-### Endpoints consumidos
-
-| Domínio | Endpoints |
-|---------|-----------|
-| Auth | `POST /auth/login`, `POST /auth/signup` |
-| Usuário | `GET /user/profile`, `PUT /user/profile` |
-| Casal | `POST /couples`, `GET /couples/me`, `GET /couples/me/pending`, `GET /couples/invites`, `PUT /couples/:id/accept`, `PUT /couples/:id/decline`, `DELETE /couples/:id`, `DELETE /couples/me` |
-| Desafios | `POST /challenges`, `GET /challenges`, `GET /challenges/active`, `GET /challenges/:id/score`, `PUT /challenges/:id/finish` |
-| Tarefas | `POST /tasks`, `GET /challenges/:id/tasks`, `PUT /tasks/:id`, `DELETE /tasks/:id`, `POST /task-completions` |
+- `✨` - Nova funcionalidade
+- `🐛` - Correção de bug
+- `📝` - Documentação
+- `♻️` - Refatoração
+- `🔧` - Configuração/manutenção
 
 ---
 
-## 🤝 Convenções do Projeto
+## 👨‍💻 Autor
 
-### Commits
+**Gabriel Freire**
 
-O projeto usa o padrão **Gitmoji**:
-
-```
-✨ feat: nova funcionalidade
-🐛 fix: correção de bug
-♻️ refactor: refatoração sem mudança de comportamento
-🔧 chore: configuração e setup
-📝 docs: documentação
-```
-
-### Styled Components
-
-- Estilos em arquivos separados `Component.styles.ts`
-- Todos os valores via tokens do tema — sem valores hardcoded
-- Props dinâmicas com prefixo `$` (ex: `$isWinning`, `$collapsed`)
-
-### Formulários
-
-- Campos numéricos validados como `string` no Zod e convertidos no `onSubmit`
-- Erros da API exibidos via `ErrorMessage` — nunca `alert()` ou `console.error`
-- `axios.isAxiosError()` para acessar `err.response.data.error`
+- GitHub: [@gafreire](https://github.com/gafreire)
+- LinkedIn: [Gabriel Freire](https://www.linkedin.com/in/gabriel-freire-fumes/)
 
 ---
 
-## 📄 Licença
-
-MIT
+<p align="center">
+  Feito com ❤️ por Gabriel Freire
+</p>
