@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import type { InviteWithUser } from "../../../types/couple.types";
 import { coupleService } from "../../../services/couple.service";
