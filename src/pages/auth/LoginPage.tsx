@@ -4,17 +4,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/auth.service';
 import {
   Container,
-  Logo,
+  LogoWrapper,
+  LogoIcon,
+  LogoText,
+  Tagline,
   Card,
+  CardTitle,
+  CardSubtitle,
   Form,
+  InputWrapper,
+  InputIcon,
   Input,
   Button,
   ErrorMessage,
-  SignupLink
+  SignupLink,
 } from './LoginPage.styles';
 
 const loginSchema = z.object({
@@ -54,34 +62,51 @@ const LoginPage = () => {
 
   return (
     <Container>
-      <Logo>Couple Challenge</Logo>
+      <LogoWrapper>
+        <LogoIcon>🤍</LogoIcon>
+        <LogoText>Couple<span>Challenge</span></LogoText>
+        <Tagline>Transforme sua rotina em uma competição divertida.</Tagline>
+      </LogoWrapper>
+
       <Card>
+        <div>
+          <CardTitle>Acesse sua conta</CardTitle>
+          <CardSubtitle>Entre para continuar seus desafios</CardSubtitle>
+        </div>
+
         <Form onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            type="email"
-            placeholder="Email"
-            {...register('email')}
-          />
+          <InputWrapper>
+            <InputIcon><Mail size={15} /></InputIcon>
+            <Input
+              type="email"
+              placeholder="seu@email.com"
+              {...register('email')}
+            />
+          </InputWrapper>
           {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
 
-          <Input
-            type="password"
-            placeholder="Senha"
-            {...register('password')}
-          />
+          <InputWrapper>
+            <InputIcon><Lock size={15} /></InputIcon>
+            <Input
+              type="password"
+              placeholder="••••••••"
+              {...register('password')}
+            />
+          </InputWrapper>
+          {/* <ForgotPassword>Esqueceu a senha?</ForgotPassword> */}
           {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
 
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Entrando...' : 'Entrar'}
+            {isSubmitting ? 'Entrando...' : <>Entrar <ArrowRight size={16} /></>}
           </Button>
         </Form>
-
-        <SignupLink>
-          Não tem conta? <Link to="/signup">Cadastre-se</Link>
-        </SignupLink>
       </Card>
+
+      <SignupLink>
+        Não tem uma conta? <Link to="/signup">Cadastre-se agora</Link>
+      </SignupLink>
     </Container>
   );
 };

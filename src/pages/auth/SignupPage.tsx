@@ -4,17 +4,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { User, Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/auth.service';
 import {
   Container,
-  Logo,
+  LogoWrapper,
+  LogoIcon,
+  LogoText,
+  Tagline,
   Card,
+  CardTitle,
+  CardSubtitle,
   Form,
+  InputWrapper,
+  InputIcon,
   Input,
   Button,
   ErrorMessage,
-  SignupLink
+  SignupLink,
 } from './LoginPage.styles';
 
 const signupSchema = z.object({
@@ -55,41 +63,60 @@ const SignupPage = () => {
 
   return (
     <Container>
-      <Logo>Couple Challenge</Logo>
+      <LogoWrapper>
+        <LogoIcon>🤍</LogoIcon>
+        <LogoText>Couple<span>Challenge</span></LogoText>
+        <Tagline>Transforme sua rotina em uma competição divertida.</Tagline>
+      </LogoWrapper>
+
       <Card>
+        <div>
+          <CardTitle>Criar nova conta</CardTitle>
+          <CardSubtitle>Comece sua jornada hoje mesmo.</CardSubtitle>
+        </div>
+
         <Form onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            type="text"
-            placeholder="Nome"
-            {...register('name')}
-          />
+          <InputWrapper>
+            <InputIcon><User size={15} /></InputIcon>
+            <Input
+              type="text"
+              placeholder="Seu nome"
+              {...register('name')}
+            />
+          </InputWrapper>
           {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
 
-          <Input
-            type="email"
-            placeholder="Email"
-            {...register('email')}
-          />
+          <InputWrapper>
+            <InputIcon><Mail size={15} /></InputIcon>
+            <Input
+              type="email"
+              placeholder="exemplo@email.com"
+              {...register('email')}
+            />
+          </InputWrapper>
           {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
 
-          <Input
-            type="password"
-            placeholder="Senha"
-            {...register('password')}
-          />
+          <InputWrapper>
+            <InputIcon><Lock size={15} /></InputIcon>
+            <Input
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              {...register('password')}
+            />
+          </InputWrapper>
           {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
 
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
+            {isSubmitting ? 'Cadastrando...' : <>Cadastrar <ArrowRight size={16} /></>}
           </Button>
         </Form>
-
-        <SignupLink>
-          Já tem conta? <Link to="/login">Entrar</Link>
-        </SignupLink>
       </Card>
+
+      <SignupLink>
+        Já tem uma conta? <Link to="/login">Entre agora</Link>
+      </SignupLink>
     </Container>
   );
 };
