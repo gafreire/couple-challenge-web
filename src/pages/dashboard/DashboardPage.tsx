@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { coupleService } from '../../services/couple.service';
 import { challengeService } from '../../services/challenge.service';
 import { taskService } from '../../services/task.service';
@@ -22,7 +23,6 @@ import {
   ErrorMessage,
 } from './DashboardPage.styles';
 import { Heart, Target, Zap, Lock, Share2, CheckCircle } from 'lucide-react';
-import { taskService as ts } from '../../services/task.service';
 
 const DashboardPage = () => {
   const { user } = useAuthStore();
@@ -38,8 +38,12 @@ const DashboardPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+
         const [coupleData, challengeData] = await Promise.all([
-          coupleService.getMyCouple().catch(() => null),
+          coupleService.getMyCouple().catch((err) => {
+            if (axios.isAxiosError(err)) return null;
+            return null;
+          }),
           challengeService.getActiveChallenge().catch(() => null),
         ]);
 
@@ -66,7 +70,7 @@ const DashboardPage = () => {
 
   const handleCompleteTask = async (taskId: string) => {
     try {
-      await ts.completeTask(taskId);
+      await taskService.completeTask(taskId);
       if (challenge) {
         const [scoreData, tasksData] = await Promise.all([
           challengeService.getChallengeScore(challenge.id),
@@ -87,7 +91,6 @@ const DashboardPage = () => {
   const hasCouple = !!couple;
   const hasChallenge = !!challenge;
 
-  // Challenge progress
   let progress = 0;
   let daysRemaining = 0;
   let progressPercent = '0%';
@@ -107,36 +110,34 @@ const DashboardPage = () => {
 
   return (
     <Container>
-      {/* Header */}
       <Header>
         <Greeting>Olá, {userName}! 👋</Greeting>
         {hasChallenge && <Subtitle>Pronto para superar o desafio de hoje?</Subtitle>}
       </Header>
 
-      {/* ── Estado com desafio ativo ── */}
-      {hasChallenge && couple && score ? (
+      {hasChallenge && couple ? (
         <>
-          {/* Score */}
-          <ScoreRow>
-            <ScoreCard $isWinning={user1Score > user2Score}>
-              <ScoreAvatar>{couple.user_1.name.charAt(0)}</ScoreAvatar>
-              <ScoreInfo>
-                <ScoreName>{couple.user_1.name.split(' ')[0]}</ScoreName>
-                <ScoreValue>{user1Score}<span>PTS</span></ScoreValue>
-                <ScoreTasks>⊙ {score.user_id_1_tasks} tarefas concluídas</ScoreTasks>
-              </ScoreInfo>
-            </ScoreCard>
-            <ScoreCard $isWinning={user2Score > user1Score}>
-              <ScoreAvatar>{couple.user_2?.name.charAt(0) || '?'}</ScoreAvatar>
-              <ScoreInfo>
-                <ScoreName>{couple.user_2?.name.split(' ')[0] || 'Parceiro'}</ScoreName>
-                <ScoreValue>{user2Score}<span>PTS</span></ScoreValue>
-                <ScoreTasks>⊙ {score.user_id_2_tasks} tarefas concluídas</ScoreTasks>
-              </ScoreInfo>
-            </ScoreCard>
-          </ScoreRow>
+          {score && (
+            <ScoreRow>
+              <ScoreCard $isWinning={user1Score > user2Score}>
+                <ScoreAvatar>{couple.user_1.name.charAt(0)}</ScoreAvatar>
+                <ScoreInfo>
+                  <ScoreName>{couple.user_1.name.split(' ')[0]}</ScoreName>
+                  <ScoreValue>{user1Score}<span>PTS</span></ScoreValue>
+                  <ScoreTasks>⊙ {score.user_id_1_tasks} tarefas concluídas</ScoreTasks>
+                </ScoreInfo>
+              </ScoreCard>
+              <ScoreCard $isWinning={user2Score > user1Score}>
+                <ScoreAvatar>{couple.user_2?.name.charAt(0) || '?'}</ScoreAvatar>
+                <ScoreInfo>
+                  <ScoreName>{couple.user_2?.name.split(' ')[0] || 'Parceiro'}</ScoreName>
+                  <ScoreValue>{user2Score}<span>PTS</span></ScoreValue>
+                  <ScoreTasks>⊙ {score.user_id_2_tasks} tarefas concluídas</ScoreTasks>
+                </ScoreInfo>
+              </ScoreCard>
+            </ScoreRow>
+          )}
 
-          {/* Challenge card */}
           <ChallengeCard>
             <ChallengeLabel>Desafio atual</ChallengeLabel>
             <ChallengeName>{challenge.name}</ChallengeName>
@@ -157,7 +158,6 @@ const DashboardPage = () => {
             </ChallengeFooter>
           </ChallengeCard>
 
-          {/* Quick tasks */}
           {tasks.length > 0 && (
             <>
               <SectionHeader>
@@ -193,7 +193,6 @@ const DashboardPage = () => {
         </>
       ) : (
         <>
-          {/* ── Estado sem casal / sem desafio ── */}
           {!hasCouple && (
             <EmptyCard>
               <EmptyIconRow>
@@ -230,7 +229,6 @@ const DashboardPage = () => {
             </EmptyCard>
           )}
 
-          {/* Bottom cards */}
           <BottomGrid>
             <InfoCard $locked={!hasCouple}>
               <InfoCardIcon><Target size={16} /></InfoCardIcon>

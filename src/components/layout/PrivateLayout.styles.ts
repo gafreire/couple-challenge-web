@@ -16,7 +16,9 @@ export const Wrapper = styled.div<{ $sidebarCollapsed: boolean }>`
 export const Content = styled.main<{ $sidebarCollapsed: boolean }>`
   flex: 1;
   padding: ${({ theme }) => theme.spacing.lg};
-  min-height: 100vh;
+  padding-bottom: 80px;
+  height: 100vh;
+  overflow-y: auto;
 
   @media (min-width: 768px) {
     margin-left: ${({ $sidebarCollapsed }) => ($sidebarCollapsed ? '72px' : '220px')};
