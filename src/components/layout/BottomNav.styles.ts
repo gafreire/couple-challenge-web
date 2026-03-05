@@ -7,12 +7,13 @@ export const Nav = styled.nav`
   left: 0;
   right: 0;
   height: 64px;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: #0f0f0f;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: space-around;
   z-index: 100;
+  padding: 0 8px;
 
   @media (min-width: 768px) {
     display: none;
@@ -24,23 +25,36 @@ export const NavItem = styled(NavLink)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  gap: 4px;
+  color: #555;
   text-decoration: none;
   flex: 1;
   height: 100%;
   transition: color 0.2s;
+  position: relative;
 
   &.active {
-    color: ${({ theme }) => theme.colors.primary};
+    color: #E63946;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 2px;
+      background-color: #E63946;
+      border-radius: 0 0 4px 4px;
+    }
   }
 
-  &:hover {
-    color: ${({ theme }) => theme.colors.primary};
+  &:not(.active):hover {
+    color: #999;
   }
 `;
 
 export const NavLabel = styled.span`
-  font-size: ${({ theme }) => theme.fonts.sizes.xs};
-  font-weight: ${({ theme }) => theme.fonts.weights.medium};
+  font-size: 0.6875rem;
+  font-weight: 500;
 `;

@@ -7,7 +7,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  CheckSquare
+  CheckSquare,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import {
@@ -32,12 +32,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapseChange }) => {
   const { logout } = useAuthStore();
 
   const navItems = [
-  { path: "/dashboard", icon: Home, label: "Início" },
-  { path: "/couple", icon: Heart, label: "Casal" },
-  { path: "/challenges", icon: Target, label: "Desafios" },
-  { path: "/tasks", icon: CheckSquare, label: "Tarefas" },
-  { path: "/profile", icon: User, label: "Perfil" },
-];
+    { path: "/dashboard", icon: Home, label: "Início" },
+    { path: "/couple", icon: Heart, label: "Casal" },
+    { path: "/challenges", icon: Target, label: "Desafios" },
+    { path: "/tasks", icon: CheckSquare, label: "Tarefas" },
+    { path: "/profile", icon: User, label: "Perfil" },
+  ];
 
   const handleLogout = () => {
     logout();
@@ -54,7 +54,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapseChange }) => {
       </CollapseButton>
 
       <SidebarHeader>
-        <SidebarLogo $collapsed={collapsed}>Couple{"\n"}Challenge</SidebarLogo>
+        <SidebarLogo $collapsed={collapsed}>
+          <span>Couple</span>
+          <span>Challenge</span>
+        </SidebarLogo>
       </SidebarHeader>
 
       <SidebarNav>
