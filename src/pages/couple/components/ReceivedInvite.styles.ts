@@ -1,110 +1,154 @@
 import styled, { keyframes } from 'styled-components';
 
-const slideIn = keyframes`
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
 `;
 
 export const Container = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  gap: ${({ theme }) => theme.spacing.lg};
+  min-height: 70vh;
+  animation: ${fadeIn} 0.4s ease both;
 `;
 
-export const Title = styled.h2`
-  font-size: ${({ theme }) => theme.fonts.sizes.xxl};
-  font-weight: ${({ theme }) => theme.fonts.weights.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  text-align: center;
-`;
-
-export const InviteCard = styled.div`
+export const Card = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: 20px;
   width: 100%;
   max-width: 360px;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing.xl};
-  animation: ${slideIn} 0.3s ease forwards;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 24px;
+  padding: 48px 32px 36px;
+  text-align: center;
+`;
+
+export const AvatarWrapper = styled.div`
+  position: relative;
 `;
 
 export const Avatar = styled.div`
-  width: 64px;
-  height: 64px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background-color: ${({ theme }) => theme.colors.primary};
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E63946, #C1121F);
+  border: 3px solid #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ theme }) => theme.fonts.sizes.xxl};
-  font-weight: ${({ theme }) => theme.fonts.weights.bold};
+  font-size: 1.75rem;
+  font-weight: 700;
   color: #fff;
+  box-shadow: 0 0 0 1px rgba(230, 57, 70, 0.3);
 `;
 
-export const InviterName = styled.p`
-  font-size: ${({ theme }) => theme.fonts.sizes.lg};
-  font-weight: ${({ theme }) => theme.fonts.weights.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-export const InviteMessage = styled.p`
-  font-size: ${({ theme }) => theme.fonts.sizes.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-align: center;
-`;
-
-export const ButtonGroup = styled.div`
+export const HeartBadge = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E63946, #C1121F);
   display: flex;
-  gap: ${({ theme }) => theme.spacing.md};
-  width: 100%;
+  align-items: center;
+  justify-content: center;
+  animation: ${pulse} 2s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(230, 57, 70, 0.5);
+  border: 2px solid #0a0a0a;
+`;
+
+export const Title = styled.h2`
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #EAEAEA;
+  letter-spacing: -0.3px;
+`;
+
+export const Subtitle = styled.p`
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: -12px;
 `;
 
 export const AcceptButton = styled.button`
-  flex: 1;
-  padding: ${({ theme }) => theme.spacing.md};
-  background-color: ${({ theme }) => theme.colors.primary};
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #E63946, #C1121F);
   color: #fff;
-  font-size: ${({ theme }) => theme.fonts.sizes.sm};
-  font-weight: ${({ theme }) => theme.fonts.weights.semibold};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  transition: background-color 0.2s;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primaryDark};
+    opacity: 0.92;
+    transform: translateY(-1px);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+export const RejectButton = styled.button`
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: #666;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #999;
+  }
+
+  &:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
   }
 `;
 
-export const DeclineButton = styled.button`
-  flex: 1;
-  padding: ${({ theme }) => theme.spacing.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.fonts.sizes.sm};
-  font-weight: ${({ theme }) => theme.fonts.weights.semibold};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  transition: all 0.2s;
-  cursor: pointer;
+export const Tagline = styled.p`
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+`;
 
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.error};
-    color: ${({ theme }) => theme.colors.error};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+export const ErrorMessage = styled.p`
+  color: #FF4444;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 8px 12px;
+  background: rgba(255, 68, 68, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 68, 68, 0.15);
+  width: 100%;
 `;

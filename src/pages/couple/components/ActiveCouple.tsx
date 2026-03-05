@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import axios from 'axios';
-import type { CoupleWithUsers } from '../../../types/couple.types';
-import { coupleService } from '../../../services/couple.service';
+import { useState } from "react";
+import axios from "axios";
+import { Heart, Calendar } from "lucide-react";
+import type { CoupleWithUsers } from "../../../types/couple.types";
+import { coupleService } from "../../../services/couple.service";
 import {
   Container,
   CoupleCard,
@@ -9,35 +10,33 @@ import {
   MemberCard,
   Avatar,
   MemberName,
-  HeartIcon,
+  HeartWrapper,
   Divider,
-  InfoRow,
-  InfoLabel,
-  InfoValue,
+  DateSection,
+  DateLabel,
+  DateValue,
   LeaveButton,
-} from './ActiveCouple.styles';
-import { ErrorMessage } from './NoCouple.styles';
+  ErrorMessage,
+} from "./ActiveCouple.styles";
 
 const ActiveCouple = ({ coupleData }: { coupleData: CoupleWithUsers }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   const handleLeave = async () => {
-    if (!window.confirm('Tem certeza que deseja sair do casal?')) {
-      return;
-    }
+    if (!window.confirm("Tem certeza que deseja sair do casal?")) return;
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
       await coupleService.leaveCouple();
       window.location.reload();
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error || 'Erro ao sair do casal');
+        setError(err.response?.data?.error || "Erro ao sair do casal");
       } else {
-        setError('Erro ao sair do casal');
+        setError("Erro ao sair do casal");
       }
     } finally {
       setIsLoading(false);
@@ -45,12 +44,17 @@ const ActiveCouple = ({ coupleData }: { coupleData: CoupleWithUsers }) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
     });
   };
+
+  const daysTogether = Math.floor(
+    (new Date().getTime() - new Date(coupleData.couple.created_at).getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
 
   const { couple, user_1, user_2 } = coupleData;
 
@@ -59,25 +63,37 @@ const ActiveCouple = ({ coupleData }: { coupleData: CoupleWithUsers }) => {
       <CoupleCard>
         <MembersRow>
           <MemberCard>
-            <Avatar>{user_1.name.charAt(0)}</Avatar>
+            <Avatar>{user_1.name.charAt(0).toLowerCase()}</Avatar>
             <MemberName>{user_1.name}</MemberName>
           </MemberCard>
-          <HeartIcon>❤️</HeartIcon>
+
+          <HeartWrapper>
+            <Heart size={22} fill="#E63946" />
+          </HeartWrapper>
+
           <MemberCard>
-            <Avatar>{user_2 ? user_2.name.charAt(0) : '?'}</Avatar>
-            <MemberName>{user_2 ? user_2.name : 'Pendente'}</MemberName>
+            <Avatar>
+              {user_2 ? user_2.name.charAt(0).toLowerCase() : "?"}
+            </Avatar>
+            <MemberName>{user_2 ? user_2.name : "Pendente"}</MemberName>
           </MemberCard>
         </MembersRow>
 
         <Divider />
 
-        <InfoRow>
-          <InfoLabel>Juntos desde</InfoLabel>
-          <InfoValue>{formatDate(couple.created_at)}</InfoValue>
-        </InfoRow>
+        <DateSection>
+          <DateLabel>
+            <Calendar size={12} /> Juntos desde
+          </DateLabel>
+          <DateValue>{formatDate(couple.created_at)}</DateValue>
+          <DateLabel style={{ marginTop: 4 }}>
+            🗓️ {daysTogether} dias juntos
+          </DateLabel>
+        </DateSection>
 
         <LeaveButton onClick={handleLeave} disabled={isLoading}>
-          {isLoading ? 'Saindo...' : 'Sair do Casal'}
+          <Heart size={14} fill="#E63946" />
+          {isLoading ? "Saindo..." : "Sair do Casal"}
         </LeaveButton>
 
         {error && <ErrorMessage>{error}</ErrorMessage>}
