@@ -4,6 +4,7 @@ export const Wrapper = styled.div<{ $sidebarCollapsed: boolean }>`
   display: flex;
   min-height: 100vh;
   background-color: #0a0a0a;
+  overflow: hidden;
   background-image: repeating-linear-gradient(
     -45deg,
     transparent,

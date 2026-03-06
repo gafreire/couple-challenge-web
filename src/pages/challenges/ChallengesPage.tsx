@@ -1,26 +1,21 @@
-import { useState, useEffect } from "react";
-import { challengeService } from "../../services/challenge.service";
-import { coupleService } from "../../services/couple.service";
-import type { Challenge, ChallengeScore } from "../../types/challenge.types";
-import type { CoupleWithUsers } from "../../types/couple.types";
-import ActiveChallengeCard from "./components/ActiveChallengeCard";
-import ChallengeHistoryItem from "./components/ChallengeHistoryItem";
-import CreateChallengeModal from "./components/CreateChallengeModal";
+import { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
+import { challengeService } from '../../services/challenge.service';
+import { coupleService } from '../../services/couple.service';
+import type { Challenge, ChallengeScore } from '../../types/challenge.types';
+import type { CoupleWithUsers } from '../../types/couple.types';
+import ActiveChallengeCard from './components/ActiveChallengeCard';
+import ChallengeHistoryItem from './components/ChallengeHistoryItem';
+import CreateChallengeModal from './components/CreateChallengeModal';
 import {
-  Container,
-  Header,
-  Title,
-  CreateButton,
-  Section,
-  SectionTitle,
-  EmptyMessage,
-  ErrorMessage as ErrorMessageStyled,
-} from "./ChallengesPage.styles";
+  Container, Header, TitleGroup, Title, TitleSub, CreateButton,
+  Section, SectionTitle, EmptyState, EmptyIcon, EmptyTitle, EmptySubtitle,
+  ErrorMessage,
+} from './ChallengesPage.styles';
+import { Heart } from 'lucide-react';
 
 const ChallengesPage = () => {
-  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(
-    null,
-  );
+  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [score, setScore] = useState<ChallengeScore | null>(null);
   const [coupleData, setCoupleData] = useState<CoupleWithUsers | null>(null);
@@ -45,60 +40,44 @@ const ChallengesPage = () => {
         setScore(scoreData);
       }
     } catch {
-      setError("Erro ao carregar desafios");
+      setError('Erro ao carregar desafios');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
-  const handleCreateChallenge = () => {
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleModalSuccess = () => {
-    window.location.reload();
-  };
-
-  if (loading)
-    return (
-      <Container>
-        <ErrorMessageStyled>Carregando...</ErrorMessageStyled>
-      </Container>
-    );
-  if (error)
-    return (
-      <Container>
-        <ErrorMessageStyled>{error}</ErrorMessageStyled>
-      </Container>
-    );
+  if (loading) return <Container><ErrorMessage>Carregando...</ErrorMessage></Container>;
+  if (error) return <Container><ErrorMessage>{error}</ErrorMessage></Container>;
 
   const historyChallenges = challenges.filter(
-    (c) => c.status === "completed" || c.status === "cancelled",
+    (c) => c.status === 'completed' || c.status === 'cancelled'
   );
 
   return (
     <Container>
       <Header>
-        <Title>Desafios</Title>
+        <TitleGroup>
+          <Title>Desafios</Title>
+          <TitleSub>Acompanhe seu progresso e supere seus limites em dupla.</TitleSub>
+        </TitleGroup>
         {!activeChallenge && (
-          <CreateButton onClick={handleCreateChallenge}>Criar</CreateButton>
+          <CreateButton onClick={() => setShowModal(true)}>
+            <Plus size={15} /> Novo Desafio
+          </CreateButton>
         )}
       </Header>
 
       {activeChallenge && coupleData && (
-        <ActiveChallengeCard
-          challenge={activeChallenge}
-          score={score}
-          coupleData={coupleData}
-        />
+        <Section>
+          <SectionTitle>Desafio Ativo</SectionTitle>
+          <ActiveChallengeCard
+            challenge={activeChallenge}
+            score={score}
+            coupleData={coupleData}
+          />
+        </Section>
       )}
 
       <Section>
@@ -112,14 +91,18 @@ const ChallengesPage = () => {
             />
           ))
         ) : (
-          <EmptyMessage>Nenhum desafio concluído ou cancelado</EmptyMessage>
+          <EmptyState>
+            <EmptyIcon><Heart size={20} /></EmptyIcon>
+            <EmptyTitle>Nenhum desafio concluído ou cancelado</EmptyTitle>
+            <EmptySubtitle>Seu histórico de conquistas e marcas aparecerá aqui.</EmptySubtitle>
+          </EmptyState>
         )}
       </Section>
 
       {showModal && (
         <CreateChallengeModal
-          onClose={handleCloseModal}
-          onSuccess={handleModalSuccess}
+          onClose={() => setShowModal(false)}
+          onSuccess={() => window.location.reload()}
         />
       )}
     </Container>

@@ -4,19 +4,11 @@ import { challengeService } from '../../../services/challenge.service';
 import type { Challenge, ChallengeScore } from '../../../types/challenge.types';
 import type { CoupleWithUsers } from '../../../types/couple.types';
 import {
-  CardHeader,
-  ChallengeName,
-  StatusBadge,
-  ProgressBar,
-  ProgressFill,
-  ProgressLabel,
-  ScoreRow,
-  ScoreCard,
-  ScoreName,
-  ScoreValue,
-  FinishButton,
-  Card,
-  ErrorMessage,
+  Card, CardHeader, ChallengeName, StatusBadge,
+  ProgressSection, ProgressHeader, ProgressLabel, ProgressPercent,
+  ProgressBar, ProgressFill,
+  ScoreRow, ScoreCard, ScoreAvatar, ScoreInfo, ScoreName, ScoreValue, VsDivider,
+  FinishButton, ErrorMessage,
 } from './ActiveChallengeCard.styles';
 
 interface ActiveChallengeCardProps {
@@ -37,7 +29,6 @@ const ActiveChallengeCard: FC<ActiveChallengeCardProps> = ({ challenge, score, c
   const daysPassed = Math.ceil((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
   const progress = Math.min(Math.max((daysPassed / totalDays) * 100, 0), 100);
   const remainingDays = Math.max(totalDays - daysPassed, 0);
-
   const canFinish = now > end;
 
   const handleFinish = async () => {
@@ -46,6 +37,7 @@ const ActiveChallengeCard: FC<ActiveChallengeCardProps> = ({ challenge, score, c
     setError(null);
     try {
       await challengeService.finishChallenge(challenge.id);
+      window.location.reload();
     } catch {
       setError('Erro ao finalizar desafio. Tente novamente.');
     } finally {
@@ -53,27 +45,46 @@ const ActiveChallengeCard: FC<ActiveChallengeCardProps> = ({ challenge, score, c
     }
   };
 
+  const user1 = coupleData.user_1;
+  const user2 = coupleData.user_2;
+  const score1 = score?.user_id_1_score ?? 0;
+  const score2 = score?.user_id_2_score ?? 0;
+
   return (
     <Card>
       <CardHeader>
         <ChallengeName>{challenge.name}</ChallengeName>
-        <StatusBadge>{challenge.status}</StatusBadge>
+        <StatusBadge>Ativo</StatusBadge>
       </CardHeader>
 
-      <ProgressBar>
-        <ProgressFill $progress={progress} />
-      </ProgressBar>
-      <ProgressLabel>{remainingDays} dias restantes</ProgressLabel>
+      <ProgressSection>
+        <ProgressHeader>
+          <ProgressLabel>{remainingDays} dias restantes</ProgressLabel>
+          <ProgressPercent>{Math.round(progress)}%</ProgressPercent>
+        </ProgressHeader>
+        <ProgressBar>
+          <ProgressFill $progress={progress} />
+        </ProgressBar>
+      </ProgressSection>
 
       {score && (
         <ScoreRow>
           <ScoreCard>
-            <ScoreName>{coupleData.user_1.name}</ScoreName>
-            <ScoreValue>{score.user_id_1_score}</ScoreValue>
+            <ScoreAvatar>{user1.name.charAt(0).toUpperCase()}</ScoreAvatar>
+            <ScoreInfo>
+              <ScoreName>{user1.name.split(' ')[0]}</ScoreName>
+              <ScoreValue>{score1}</ScoreValue>
+            </ScoreInfo>
           </ScoreCard>
+
+          <VsDivider>VS</VsDivider>
+
           <ScoreCard>
-            <ScoreName>{coupleData.user_2?.name || 'Parceiro'}</ScoreName>
-            <ScoreValue>{score.user_id_2_score}</ScoreValue>
+            <ScoreAvatar>{user2?.name.charAt(0).toUpperCase() || '?'}</ScoreAvatar>
+            <ScoreInfo>
+              <ScoreName>{user2?.name.split(' ')[0] || 'Parceiro'}</ScoreName>
+              <ScoreValue>{score2}</ScoreValue>
+            </ScoreInfo>
           </ScoreCard>
         </ScoreRow>
       )}
@@ -83,6 +94,7 @@ const ActiveChallengeCard: FC<ActiveChallengeCardProps> = ({ challenge, score, c
           {finishing ? 'Finalizando...' : 'Finalizar Desafio'}
         </FinishButton>
       )}
+
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </Card>
   );

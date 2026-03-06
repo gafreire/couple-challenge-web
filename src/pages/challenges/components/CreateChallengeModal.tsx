@@ -1,4 +1,5 @@
 import { type FC, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -54,21 +55,20 @@ const CreateChallengeModal: FC<CreateChallengeModalProps> = ({ onClose, onSucces
       onClose();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.error || 'Erro ao criar desafio. Tente novamente.';
-        setApiError(errorMessage);
+        setApiError(error.response?.data?.error || 'Erro ao criar desafio. Tente novamente.');
       } else {
         setApiError('Erro ao criar desafio. Tente novamente.');
       }
     }
   };
 
-  return (
-    <Overlay>
-      <StyledCreateChallengeModal>
+  return createPortal(
+    <Overlay onClick={onClose}>
+      <StyledCreateChallengeModal onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <ModalTitle>Criar Desafio</ModalTitle>
           <CloseButton onClick={onClose}>
-            <X size={20} />
+            <X size={18} />
           </CloseButton>
         </ModalHeader>
 
@@ -105,10 +105,12 @@ const CreateChallengeModal: FC<CreateChallengeModalProps> = ({ onClose, onSucces
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Criando...' : 'Criar Desafio'}
           </SubmitButton>
+
           {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
         </Form>
       </StyledCreateChallengeModal>
-    </Overlay>
+    </Overlay>,
+    document.body
   );
 };
 
