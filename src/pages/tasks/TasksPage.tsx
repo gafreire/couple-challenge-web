@@ -8,6 +8,7 @@ import type { TaskWithCount, Task } from '../../types/task.types';
 import TaskItem from '../challenges/components/TaskItem';
 import CreateTaskModal from '../challenges/components/CreateTaskModal';
 import EditTaskModal from '../challenges/components/EditTaskModal';
+import DeleteTaskModal from '../challenges/components/DeleteTaskModal';
 import {
   Container, Header, HeaderLeft, Title, ChallengeInfo, ChallengeLabel, ChallengeName,
   HeaderRight, CreateButton,
@@ -29,6 +30,7 @@ const TasksPage = () => {
   const [taskError, setTaskError] = useState<string | null>(null);
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [deletingTask, setDeletingTask] = useState<Task | null>(null);
 
   const fetchData = async () => {
     try {
@@ -47,18 +49,6 @@ const TasksPage = () => {
   };
 
   useEffect(() => { fetchData(); }, []);
-
-  const handleDeleteTask = async (taskId: string) => {
-    if (window.confirm('Tem certeza que deseja deletar esta tarefa?')) {
-      try {
-        await taskService.deleteTask(taskId);
-        setTaskError(null);
-        fetchData();
-      } catch {
-        setTaskError('Erro ao deletar tarefa');
-      }
-    }
-  };
 
   const handleCompleteTask = async (taskId: string) => {
     try {
@@ -127,7 +117,7 @@ const TasksPage = () => {
               taskWithCount={taskWithCount}
               currentUserId={user?.id || ''}
               onEdit={(task) => { setTaskError(null); setEditingTask(task); }}
-              onDelete={handleDeleteTask}
+              onDelete={(task) => { setTaskError(null); setDeletingTask(task); }}
               onComplete={handleCompleteTask}
             />
           ))
@@ -156,6 +146,14 @@ const TasksPage = () => {
         <EditTaskModal
           task={editingTask}
           onClose={() => setEditingTask(null)}
+          onSuccess={() => { setTaskError(null); fetchData(); }}
+        />
+      )}
+
+      {deletingTask && (
+        <DeleteTaskModal
+          task={deletingTask}
+          onClose={() => setDeletingTask(null)}
           onSuccess={() => { setTaskError(null); fetchData(); }}
         />
       )}

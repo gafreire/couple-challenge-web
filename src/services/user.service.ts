@@ -4,7 +4,6 @@ import api from "./api";
 export const userService = {
   getProfile: async () => {
     const response = await api.get(`/user/profile`);
-    console.log(response.data);
     return response.data as UserProfile;
   },
 

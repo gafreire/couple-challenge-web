@@ -161,7 +161,7 @@ const DashboardPage = () => {
           {tasks.length > 0 && (
             <>
               <SectionHeader>
-                <SectionTitle><Zap size={16} color="#E63946" /> Tarefas Rápidas</SectionTitle>
+                <SectionTitle><Zap size={16} color="#E63946" /> Tarefas </SectionTitle>
                 <SeeAllLink onClick={() => navigate('/tasks')}>VER TODAS</SeeAllLink>
               </SectionHeader>
               <TasksGrid>

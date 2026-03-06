@@ -11,7 +11,7 @@ interface TaskItemProps {
   taskWithCount: TaskWithCount;
   currentUserId: string;
   onEdit: (task: TaskWithCount['task']) => void;
-  onDelete: (taskId: string) => void;
+  onDelete: (task: TaskWithCount['task']) => void;
   onComplete: (taskId: string) => void;
 }
 
@@ -51,7 +51,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </IconButton>
         )}
         {isOwner && (
-          <IconButton onClick={() => onDelete(task.id)}>
+          <IconButton onClick={() => onDelete(task)}>
             <Trash2 size={14} />
           </IconButton>
         )}
