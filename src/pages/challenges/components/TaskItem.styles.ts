@@ -1,57 +1,94 @@
 import styled from 'styled-components';
 
-export const Item = styled.div`
+export const Item = styled.div<{ $completed?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${({ theme }) => theme.spacing.md};
-  background-color: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  gap: ${({ theme }) => theme.spacing.md};
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid ${({ $completed }) => $completed ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.07)'};
+  border-radius: 14px;
+  gap: 16px;
+  transition: border-color 0.2s;
+  opacity: ${({ $completed }) => $completed ? 0.6 : 1};
+
+  &:hover {
+    border-color: ${({ $completed }) => $completed ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.12)'};
+  }
+`;
+
+export const ItemLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const TaskIconBox = styled.div<{ $completed?: boolean }>`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: ${({ $completed }) => $completed ? 'rgba(255,255,255,0.03)' : 'rgba(230,57,70,0.1)'};
+  border: 1px solid ${({ $completed }) => $completed ? 'rgba(255,255,255,0.05)' : 'rgba(230,57,70,0.2)'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ $completed }) => $completed ? '#444' : '#E63946'};
 `;
 
 export const TaskInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-  flex: 1;
+  gap: 4px;
+  min-width: 0;
 `;
 
-export const TaskName = styled.p`
-  font-size: ${({ theme }) => theme.fonts.sizes.md};
-  font-weight: ${({ theme }) => theme.fonts.weights.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
+export const TaskName = styled.p<{ $completed?: boolean }>`
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: ${({ $completed }) => $completed ? '#555' : '#EAEAEA'};
+  text-decoration: ${({ $completed }) => $completed ? 'line-through' : 'none'};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
-export const TaskMeta = styled.p`
-  font-size: ${({ theme }) => theme.fonts.sizes.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
+export const TaskMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const PointsBadge = styled.span`
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #E63946;
+  background: rgba(230,57,70,0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+`;
+
+export const CompletionCount = styled.span`
+  font-size: 0.6875rem;
+  color: #555;
+`;
+
+export const CompletedBadge = styled.span`
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #4caf50;
+  background: rgba(76,175,80,0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
 `;
 
 export const TaskActions = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-export const CompleteButton = styled.button<{ $disabled?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background-color: ${({ $disabled, theme }) =>
-    $disabled ? theme.colors.surfaceAlt : theme.colors.primary};
-  color: #fff;
-  transition: opacity 0.2s;
-  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
-
-  &:hover {
-    opacity: ${({ $disabled }) => ($disabled ? 0.5 : 0.85)};
-  }
+  gap: 6px;
+  flex-shrink: 0;
 `;
 
 export const IconButton = styled.button`
@@ -60,22 +97,39 @@ export const IconButton = styled.button`
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  transition: all 0.2s;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #555;
   cursor: pointer;
+  transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.surfaceAlt};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    background: rgba(255,255,255,0.07);
+    color: #EAEAEA;
+    border-color: rgba(255,255,255,0.1);
   }
 `;
 
-export const PointsBadge = styled.span`
-  font-size: ${({ theme }) => theme.fonts.sizes.xs};
-  font-weight: ${({ theme }) => theme.fonts.weights.bold};
-  color: ${({ theme }) => theme.colors.primary};
-  background-color: ${({ theme }) => theme.colors.surfaceAlt};
-  padding: 2px ${({ theme }) => theme.spacing.xs};
-  border-radius: ${({ theme }) => theme.borderRadius.full};
+export const CompleteButton = styled.button<{ $disabled?: boolean; $completed?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: ${({ $completed }) =>
+    $completed
+      ? 'rgba(76,175,80,0.15)'
+      : 'linear-gradient(135deg, #E63946, #C1121F)'};
+  color: ${({ $completed }) => $completed ? '#4caf50' : '#fff'};
+  cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${({ $disabled }) => $disabled ? 0.4 : 1};
+  transition: opacity 0.2s, transform 0.1s;
+
+  &:hover {
+    opacity: ${({ $disabled }) => $disabled ? 0.4 : 0.85};
+    transform: ${({ $disabled }) => $disabled ? 'none' : 'scale(1.05)'};
+  }
 `;

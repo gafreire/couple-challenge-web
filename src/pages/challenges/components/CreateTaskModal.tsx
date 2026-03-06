@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { X } from "lucide-react";
-import { taskService } from "../../../services/task.service";
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { X } from 'lucide-react';
+import axios from 'axios';
+import { taskService } from '../../../services/task.service';
 import {
   Overlay,
   StyledCreateTaskModal,
@@ -15,13 +17,12 @@ import {
   Input,
   SubmitButton,
   ErrorMessage,
-} from "./CreateTaskModal.styles";
-import axios from "axios";
+} from './CreateTaskModal.styles';
 
 const createTaskSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
+  name: z.string().min(1, 'Nome é obrigatório'),
   description: z.string().optional(),
-  points: z.string().min(1, "Pontos são obrigatórios"),
+  points: z.string().min(1, 'Pontos são obrigatórios'),
   max_completions: z.string().optional(),
 });
 
@@ -33,12 +34,8 @@ interface CreateTaskModalProps {
   onSuccess: () => void;
 }
 
-const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
-  challengeId,
-  onClose,
-  onSuccess,
-}) => {
-  const [error, setError] = useState<string>("");
+const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ challengeId, onClose, onSuccess }) => {
+  const [error, setError] = useState<string>('');
 
   const {
     register,
@@ -55,93 +52,75 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         name: data.name,
         description: data.description,
         points: Number(data.points),
-        max_completions: data.max_completions
-          ? Number(data.max_completions)
-          : undefined,
+        max_completions: data.max_completions ? Number(data.max_completions) : undefined,
       });
       onSuccess();
       onClose();
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error || "Erro ao criar tarefa");
+        setError(err.response?.data?.error || 'Erro ao criar tarefa');
       } else {
-        setError("Erro inesperado");
+        setError('Erro inesperado');
       }
     }
   };
 
-  return (
-    <Overlay>
-      <StyledCreateTaskModal>
+  return createPortal(
+    <Overlay onClick={onClose}>
+      <StyledCreateTaskModal onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <ModalTitle>Criar Tarefa</ModalTitle>
           <CloseButton onClick={onClose}>
-            <X size={20} />
+            <X size={18} />
           </CloseButton>
         </ModalHeader>
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Label>
             Nome
-            <Input {...register("name")} placeholder="Nome da tarefa" />
+            <Input {...register('name')} placeholder="Nome da tarefa" />
             {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
           </Label>
           <Label>
             Descrição
-            <Input
-              {...register("description")}
-              placeholder="Descrição (opcional)"
-            />
-            {errors.description && (
-              <ErrorMessage>{errors.description.message}</ErrorMessage>
-            )}
+            <Input {...register('description')} placeholder="Descrição (opcional)" />
+            {errors.description && <ErrorMessage>{errors.description.message}</ErrorMessage>}
           </Label>
           <Label>
             Pontos
             <Input
-              {...register("points")}
+              {...register('points')}
               placeholder="Pontos"
               inputMode="numeric"
               onKeyDown={(e) => {
-                if (
-                  !/[0-9]/.test(e.key) &&
-                  e.key !== "Backspace" &&
-                  e.key !== "Tab"
-                ) {
+                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab') {
                   e.preventDefault();
                 }
               }}
             />
-            {errors.points && (
-              <ErrorMessage>{errors.points.message}</ErrorMessage>
-            )}
+            {errors.points && <ErrorMessage>{errors.points.message}</ErrorMessage>}
           </Label>
           <Label>
             Máximo de Conclusões
             <Input
-              {...register("max_completions")}
+              {...register('max_completions')}
               placeholder="Máximo (opcional)"
               inputMode="numeric"
               onKeyDown={(e) => {
-                if (
-                  !/[0-9]/.test(e.key) &&
-                  e.key !== "Backspace" &&
-                  e.key !== "Tab"
-                ) {
+                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab') {
                   e.preventDefault();
                 }
               }}
             />
-            {errors.max_completions && (
-              <ErrorMessage>{errors.max_completions.message}</ErrorMessage>
-            )}
+            {errors.max_completions && <ErrorMessage>{errors.max_completions.message}</ErrorMessage>}
           </Label>
           <SubmitButton type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Criando..." : "Criar Tarefa"}
+            {isSubmitting ? 'Criando...' : 'Criar Tarefa'}
           </SubmitButton>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
       </StyledCreateTaskModal>
-    </Overlay>
+    </Overlay>,
+    document.body
   );
 };
 
