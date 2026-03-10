@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,7 +7,8 @@ import axios from 'axios';
 import { Save, User, LogOut, ChevronRight } from 'lucide-react';
 import { userService } from '../../services/user.service';
 import { useAuthStore } from '../../store/authStore';
-import type { UserProfile, UpdateProfileData } from '../../types/user.types';
+import { useAppCache } from '../../store/appCache';
+import type { UpdateProfileData } from '../../types/user.types';
 import {
   Container, AvatarSection, AvatarWrapper, Avatar, UserName, UserStats,
   Card, CardTitle, Form, Label, Input, SaveButton,
@@ -23,8 +25,10 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 const ProfilePage = () => {
   const { setAuth, logout } = useAuthStore();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cache = useAppCache();
+
+  const hasCache = cache.profile !== null;
+  const [loading, setLoading] = useState(!hasCache);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -35,31 +39,37 @@ const ProfilePage = () => {
     reset,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: cache.profile?.name || '',
+      profile_picture: cache.profile?.profile_picture || '',
+    },
   });
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const profileData = await userService.getProfile();
-        setProfile(profileData);
-        reset({
-          name: profileData.name,
-          profile_picture: profileData.profile_picture || '',
-        });
-      } catch (err) {
+  const fetchProfile = async (silent = false) => {
+    try {
+      if (!silent) setLoading(true);
+      const profileData = await userService.getProfile();
+      cache.setProfile(profileData);
+      reset({
+        name: profileData.name,
+        profile_picture: profileData.profile_picture || '',
+      });
+    } catch (err) {
+      if (!silent) {
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.message || 'Erro ao carregar perfil');
         } else {
           setError('Erro desconhecido');
         }
-      } finally {
-        setLoading(false);
       }
-    };
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
 
-    fetchProfile();
-  }, [reset]);
+  useEffect(() => {
+    fetchProfile(hasCache);
+  }, []);
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
@@ -68,7 +78,7 @@ const ProfilePage = () => {
         profile_picture: data.profile_picture || null,
       };
       const updatedProfile = await userService.updateProfile(updateData);
-      setProfile(updatedProfile);
+      cache.setProfile(updatedProfile);
       const currentToken = localStorage.getItem('token');
       if (currentToken) {
         setAuth(
@@ -95,8 +105,9 @@ const ProfilePage = () => {
   };
 
   if (loading) return <Container><ErrorMessage>Carregando...</ErrorMessage></Container>;
-  if (error && !profile) return <Container><ErrorMessage>{error}</ErrorMessage></Container>;
+  if (error && !cache.profile) return <Container><ErrorMessage>{error}</ErrorMessage></Container>;
 
+  const profile = cache.profile;
   const avatarContent = profile?.profile_picture ? '' : profile?.name.charAt(0).toUpperCase();
 
   return (
@@ -138,7 +149,6 @@ const ProfilePage = () => {
         {error && <ErrorMessage>{error}</ErrorMessage>}
       </Card>
 
-      {/* Sair — apenas mobile */}
       <LogoutRow>
         <LogoutButton onClick={logout}>
           <LogoutLeft>

@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { Plus, CheckSquare } from 'lucide-react';
 import { challengeService } from '../../services/challenge.service';
 import { taskService } from '../../services/task.service';
 import { useAuthStore } from '../../store/authStore';
-import type { Challenge } from '../../types/challenge.types';
-import type { TaskWithCount, Task } from '../../types/task.types';
+import { useAppCache } from '../../store/appCache';
+import type { Task, TaskWithCount } from '../../types/task.types';
 import TaskItem from '../challenges/components/TaskItem';
 import CreateTaskModal from '../challenges/components/CreateTaskModal';
 import EditTaskModal from '../challenges/components/EditTaskModal';
@@ -22,43 +23,53 @@ type FilterType = 'todas' | 'pendentes' | 'concluidas';
 
 const TasksPage = () => {
   const { user } = useAuthStore();
-  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
-  const [tasks, setTasks] = useState<TaskWithCount[]>([]);
-  const [filter, setFilter] = useState<FilterType>('todas');
-  const [loading, setLoading] = useState(true);
+  const cache = useAppCache();
+
+  const hasCache = cache.tasksChallenge !== null || cache.tasks.length > 0;
+  const [loading, setLoading] = useState(!hasCache);
   const [error, setError] = useState<string | null>(null);
   const [taskError, setTaskError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<FilterType>('todas');
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
+
       const active = await challengeService.getActiveChallenge().catch(() => null);
-      setActiveChallenge(active);
+      let tasksData: TaskWithCount[] = [];
       if (active) {
-        const tasksData = await taskService.listChallengesTasks(active.id);
-        setTasks(tasksData);
+        tasksData = await taskService.listChallengesTasks(active.id);
       }
+
+      cache.setTasks({
+        tasksChallenge: active,
+        tasks: tasksData,
+      });
     } catch {
-      setError('Erro ao carregar tarefas');
+      if (!silent) setError('Erro ao carregar tarefas');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData(hasCache);
+  }, []);
 
   const handleCompleteTask = async (taskId: string) => {
     try {
       await taskService.completeTask(taskId);
       setTaskError(null);
-      fetchData();
+      fetchData(true);
     } catch {
       setTaskError('Erro ao completar tarefa');
     }
   };
+
+  const { tasksChallenge: activeChallenge, tasks } = cache;
 
   const filteredTasks = tasks.filter(({ task, completion_count }) => {
     const isCompleted = task.max_completions ? completion_count >= task.max_completions : false;
@@ -138,7 +149,7 @@ const TasksPage = () => {
         <CreateTaskModal
           challengeId={activeChallenge.id}
           onClose={() => setShowCreateTaskModal(false)}
-          onSuccess={() => { setTaskError(null); fetchData(); }}
+          onSuccess={() => { setTaskError(null); fetchData(true); }}
         />
       )}
 
@@ -146,7 +157,7 @@ const TasksPage = () => {
         <EditTaskModal
           task={editingTask}
           onClose={() => setEditingTask(null)}
-          onSuccess={() => { setTaskError(null); fetchData(); }}
+          onSuccess={() => { setTaskError(null); fetchData(true); }}
         />
       )}
 
@@ -154,7 +165,7 @@ const TasksPage = () => {
         <DeleteTaskModal
           task={deletingTask}
           onClose={() => setDeletingTask(null)}
-          onSuccess={() => { setTaskError(null); fetchData(); }}
+          onSuccess={() => { setTaskError(null); fetchData(true); }}
         />
       )}
     </Container>

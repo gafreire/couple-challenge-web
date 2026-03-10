@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -5,8 +6,8 @@ import { coupleService } from '../../services/couple.service';
 import { challengeService } from '../../services/challenge.service';
 import { taskService } from '../../services/task.service';
 import { useAuthStore } from '../../store/authStore';
-import type { Challenge, ChallengeScore } from '../../types/challenge.types';
-import type { CoupleWithUsers } from '../../types/couple.types';
+import { useAppCache } from '../../store/appCache';
+import type { ChallengeScore } from '../../types/challenge.types';
 import type { TaskWithCount } from '../../types/task.types';
 import {
   Container, Header, Greeting, Subtitle,
@@ -27,57 +28,65 @@ import { Heart, Target, Zap, Lock, Share2, CheckCircle } from 'lucide-react';
 const DashboardPage = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
-  const [couple, setCouple] = useState<CoupleWithUsers | null>(null);
-  const [challenge, setChallenge] = useState<Challenge | null>(null);
-  const [score, setScore] = useState<ChallengeScore | null>(null);
-  const [tasks, setTasks] = useState<TaskWithCount[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cache = useAppCache();
+
+  const hasCache = cache.dashboardCouple !== null || cache.dashboardChallenge !== null || cache.dashboardTasks.length > 0;
+  const [loading, setLoading] = useState(!hasCache);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
+  const fetchData = async (silent = false) => {
+    try {
+      if (!silent) setLoading(true);
 
-        const [coupleData, challengeData] = await Promise.all([
-          coupleService.getMyCouple().catch((err) => {
-            if (axios.isAxiosError(err)) return null;
-            return null;
-          }),
-          challengeService.getActiveChallenge().catch(() => null),
+      const [coupleData, challengeData] = await Promise.all([
+        coupleService.getMyCouple().catch((err) => {
+          if (axios.isAxiosError(err)) return null;
+          return null;
+        }),
+        challengeService.getActiveChallenge().catch(() => null),
+      ]);
+
+      let scoreData: ChallengeScore | null = null;
+      let tasksData: TaskWithCount[] = [];
+
+      if (challengeData) {
+        const [s, t] = await Promise.all([
+          challengeService.getChallengeScore(challengeData.id),
+          taskService.listChallengesTasks(challengeData.id),
         ]);
-
-        setCouple(coupleData);
-        setChallenge(challengeData);
-
-        if (challengeData) {
-          const [scoreData, tasksData] = await Promise.all([
-            challengeService.getChallengeScore(challengeData.id),
-            taskService.listChallengesTasks(challengeData.id),
-          ]);
-          setScore(scoreData);
-          setTasks(tasksData.slice(0, 3));
-        }
-      } catch {
-        setError('Erro ao carregar dados');
-      } finally {
-        setLoading(false);
+        scoreData = s;
+        tasksData = t.slice(0, 3);
       }
-    };
 
-    fetchData();
+      cache.setDashboard({
+        dashboardCouple: coupleData,
+        dashboardChallenge: challengeData,
+        dashboardScore: scoreData,
+        dashboardTasks: tasksData,
+      });
+    } catch {
+      if (!silent) setError('Erro ao carregar dados');
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(hasCache);
   }, []);
 
   const handleCompleteTask = async (taskId: string) => {
     try {
       await taskService.completeTask(taskId);
-      if (challenge) {
+      if (cache.dashboardChallenge) {
         const [scoreData, tasksData] = await Promise.all([
-          challengeService.getChallengeScore(challenge.id),
-          taskService.listChallengesTasks(challenge.id),
+          challengeService.getChallengeScore(cache.dashboardChallenge.id),
+          taskService.listChallengesTasks(cache.dashboardChallenge.id),
         ]);
-        setScore(scoreData);
-        setTasks(tasksData.slice(0, 3));
+        cache.setDashboard({
+          dashboardScore: scoreData,
+          dashboardTasks: tasksData.slice(0, 3),
+        });
       }
     } catch {
       // silent fail
@@ -86,6 +95,11 @@ const DashboardPage = () => {
 
   if (loading) return <Container><ErrorMessage>Carregando...</ErrorMessage></Container>;
   if (error) return <Container><ErrorMessage>{error}</ErrorMessage></Container>;
+
+  const couple = cache.dashboardCouple;
+  const challenge = cache.dashboardChallenge;
+  const score = cache.dashboardScore;
+  const tasks = cache.dashboardTasks;
 
   const userName = user?.name?.split(' ')[0] || 'Usuário';
   const hasCouple = !!couple;
