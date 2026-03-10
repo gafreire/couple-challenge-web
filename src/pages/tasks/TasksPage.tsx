@@ -5,7 +5,9 @@ import { challengeService } from '../../services/challenge.service';
 import { taskService } from '../../services/task.service';
 import { useAuthStore } from '../../store/authStore';
 import { useAppCache } from '../../store/appCache';
-import type { Task, TaskWithCount } from '../../types/task.types';
+import { coupleService } from '../../services/couple.service';
+import type { Task } from '../../types/task.types';
+import type { CoupleWithUsers } from '../../types/couple.types';
 import TaskItem from '../challenges/components/TaskItem';
 import CreateTaskModal from '../challenges/components/CreateTaskModal';
 import EditTaskModal from '../challenges/components/EditTaskModal';
@@ -30,6 +32,7 @@ const TasksPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [taskError, setTaskError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('todas');
+  const [coupleData, setCoupleData] = useState<CoupleWithUsers | null>(cache.challengesCouple);
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
@@ -38,16 +41,18 @@ const TasksPage = () => {
     try {
       if (!silent) setLoading(true);
 
-      const active = await challengeService.getActiveChallenge().catch(() => null);
-      let tasksData: TaskWithCount[] = [];
+      const [active, couple] = await Promise.all([
+        challengeService.getActiveChallenge().catch(() => null),
+        coupleService.getMyCouple().catch(() => null),
+      ]);
+
+      let tasksData: import('../../types/task.types').TaskWithCount[] = [];
       if (active) {
         tasksData = await taskService.listChallengesTasks(active.id);
       }
 
-      cache.setTasks({
-        tasksChallenge: active,
-        tasks: tasksData,
-      });
+      setCoupleData(couple);
+      cache.setTasks({ tasksChallenge: active, tasks: tasksData });
     } catch {
       if (!silent) setError('Erro ao carregar tarefas');
     } finally {
@@ -127,6 +132,7 @@ const TasksPage = () => {
               key={taskWithCount.task.id}
               taskWithCount={taskWithCount}
               currentUserId={user?.id || ''}
+              coupleData={coupleData!}
               onEdit={(task) => { setTaskError(null); setEditingTask(task); }}
               onDelete={(task) => { setTaskError(null); setDeletingTask(task); }}
               onComplete={handleCompleteTask}
@@ -145,17 +151,19 @@ const TasksPage = () => {
         )}
       </TaskList>
 
-      {showCreateTaskModal && (
+      {showCreateTaskModal && coupleData && (
         <CreateTaskModal
           challengeId={activeChallenge.id}
+          coupleData={coupleData}
           onClose={() => setShowCreateTaskModal(false)}
           onSuccess={() => { setTaskError(null); fetchData(true); }}
         />
       )}
 
-      {editingTask && (
+      {editingTask && coupleData && (
         <EditTaskModal
           task={editingTask}
+          coupleData={coupleData}
           onClose={() => setEditingTask(null)}
           onSuccess={() => { setTaskError(null); fetchData(true); }}
         />

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate": "knex migrate:latest --knexfile src/database/knexfile.ts",
+    "migrate:prod": "knex migrate:latest --knexfile dist/database/knexfile.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

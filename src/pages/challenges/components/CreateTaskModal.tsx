@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { X } from 'lucide-react';
 import axios from 'axios';
 import { taskService } from '../../../services/task.service';
+import type { CoupleWithUsers } from '../../../types/couple.types';
 import {
   Overlay,
   StyledCreateTaskModal,
@@ -18,23 +19,26 @@ import {
   SubmitButton,
   ErrorMessage,
 } from './CreateTaskModal.styles';
+import { Select } from './CreateChallengeModal.styles';
 
 const createTaskSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   description: z.string().optional(),
   points: z.string().min(1, 'Pontos são obrigatórios'),
   max_completions: z.string().optional(),
+  assignee: z.enum(['user_1', 'user_2', 'both']),
 });
 
 type CreateTaskFormData = z.infer<typeof createTaskSchema>;
 
 interface CreateTaskModalProps {
   challengeId: string;
+  coupleData: CoupleWithUsers;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ challengeId, onClose, onSuccess }) => {
+const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ challengeId, coupleData, onClose, onSuccess }) => {
   const [error, setError] = useState<string>('');
 
   const {
@@ -43,7 +47,16 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ challengeId, onClose,
     formState: { errors, isSubmitting },
   } = useForm<CreateTaskFormData>({
     resolver: zodResolver(createTaskSchema),
+    defaultValues: {
+      assignee: 'both',
+    },
   });
+
+  const assigneeOptions = [
+    { value: 'both', label: 'Ambos' },
+    { value: 'user_1', label: coupleData.user_1.name.split(' ')[0] },
+    { value: 'user_2', label: coupleData.user_2?.name.split(' ')[0] || 'Parceiro' },
+  ];
 
   const onSubmit = async (data: CreateTaskFormData) => {
     try {
@@ -53,6 +66,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ challengeId, onClose,
         description: data.description,
         points: Number(data.points),
         max_completions: data.max_completions ? Number(data.max_completions) : undefined,
+        assignee: data.assignee,
       });
       onSuccess();
       onClose();
@@ -112,6 +126,15 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ challengeId, onClose,
               }}
             />
             {errors.max_completions && <ErrorMessage>{errors.max_completions.message}</ErrorMessage>}
+          </Label>
+          <Label>
+            Quem pode concluir
+            <Select {...register('assignee')}>
+              {assigneeOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </Select>
+            {errors.assignee && <ErrorMessage>{errors.assignee.message}</ErrorMessage>}
           </Label>
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Criando...' : 'Criar Tarefa'}

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { X } from 'lucide-react';
 import axios from 'axios';
 import type { Task } from '../../../types/task.types';
+import type { CoupleWithUsers } from '../../../types/couple.types';
 import { taskService } from '../../../services/task.service';
 import {
   Overlay,
@@ -19,23 +20,26 @@ import {
   SubmitButton,
   ErrorMessage,
 } from './EditTaskModal.styles';
+import { Select } from './CreateChallengeModal.styles';
 
 const editTaskSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   description: z.string().optional(),
   points: z.string().min(1, 'Pontos são obrigatórios'),
   max_completions: z.string().optional(),
+  assignee: z.enum(['user_1', 'user_2', 'both']),
 });
 
 type EditTaskFormData = z.infer<typeof editTaskSchema>;
 
 interface EditTaskModalProps {
   task: Task;
+  coupleData: CoupleWithUsers;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onSuccess }) => {
+const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, coupleData, onClose, onSuccess }) => {
   const [error, setError] = useState<string>('');
 
   const {
@@ -49,8 +53,15 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onSuccess 
       description: task.description || '',
       points: String(task.points),
       max_completions: task.max_completions ? String(task.max_completions) : '',
+      assignee: task.assignee,
     },
   });
+
+  const assigneeOptions = [
+    { value: 'both', label: 'Ambos' },
+    { value: 'user_1', label: coupleData.user_1.name.split(' ')[0] },
+    { value: 'user_2', label: coupleData.user_2?.name.split(' ')[0] || 'Parceiro' },
+  ];
 
   const onSubmit = async (data: EditTaskFormData) => {
     try {
@@ -59,6 +70,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onSuccess 
         description: data.description,
         points: Number(data.points),
         max_completions: data.max_completions ? Number(data.max_completions) : undefined,
+        assignee: data.assignee,
       });
       onSuccess();
       onClose();
@@ -118,6 +130,15 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onSuccess 
               }}
             />
             {errors.max_completions && <ErrorMessage>{errors.max_completions.message}</ErrorMessage>}
+          </Label>
+          <Label>
+            Quem pode concluir
+            <Select {...register('assignee')}>
+              {assigneeOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </Select>
+            {errors.assignee && <ErrorMessage>{errors.assignee.message}</ErrorMessage>}
           </Label>
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Atualizando...' : 'Atualizar Tarefa'}

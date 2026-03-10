@@ -6,6 +6,7 @@ export interface Task {
   description: string | null;
   points: number;
   max_completions: number | null;
+  assignee: 'user_1' | 'user_2' | 'both';
   created_at: string;
   updated_at: string;
 }
@@ -31,6 +32,7 @@ export interface CreateTaskData {
   description?: string;
   points: number;
   max_completions?: number;
+  assignee?: 'user_1' | 'user_2' | 'both';
 }
 
 export interface UpdateTaskData {
@@ -38,4 +40,5 @@ export interface UpdateTaskData {
   description?: string;
   points?: number;
   max_completions?: number;
+  assignee?: 'user_1' | 'user_2' | 'both';
 }
